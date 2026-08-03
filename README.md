@@ -65,8 +65,6 @@ The defaults are BT.709, full range, unpremultiply on, which is what a modern
 composition on a modern machine usually is. They are still defaults, not
 detection.
 
-<!-- downloads:start -->
-
 ## Try it in your browser
 
 **<https://resolume-scopes-demo.stoatworks-labs.com>**
@@ -83,6 +81,8 @@ GLSL ES 3.00 is not desktop GL 4.1 core, and nothing on that page measures
 anything. The page says all of that itself, in a disclosure at the foot. The
 numbers worth trusting are in [Status](#status) and come from the offline
 harness in this repository.
+
+<!-- downloads:start -->
 
 ## Download
 
