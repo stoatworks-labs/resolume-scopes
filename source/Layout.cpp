@@ -71,10 +71,19 @@ float histogramNorm( float param, int sampleCount, int bins )
 	if( sampleCount <= 0 || bins <= 0 )
 		return 0.0f;
 
-	// 0.5 at the bottom, 4 in the middle, ~32 at the top. Most pictures put
-	// several times a flat distribution's worth of samples into their busiest
-	// bin, so the useful settings are above 1 and the range is weighted that way.
-	const double gain = std::pow( 10.0, -0.3 + 1.8 * static_cast< double >( param ) );
+	// Calibrated against real pictures, not against the arithmetic.
+	//
+	// A bin's height is (its share of the samples) x bins x gain, so a *flat*
+	// distribution reaches exactly `gain` — and gain 1 therefore means a flat
+	// histogram already fills the tile. Real footage is nowhere near flat: a
+	// picture typically puts 2-5% of its pixels in its busiest bin against the
+	// 0.4% a flat one would, so the peak is ten to thirty times flat and the
+	// useful gains are well *below* 1. An earlier version read "flat fills the
+	// tile" as the target and defaulted to 4, which put every real picture
+	// thirty times over the top of the scope and drew a solid white wall.
+	//
+	// 0.006 at the bottom, 0.1 in the middle, 1.6 at the top.
+	const double gain = std::pow( 10.0, -2.2 + 2.4 * static_cast< double >( param ) );
 
 	return static_cast< float >( gain * static_cast< double >( bins ) / static_cast< double >( sampleCount ) );
 }

@@ -36,8 +36,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdarg>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
+#include <map>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -726,6 +730,115 @@ int probe( Scopes& plugin, GLuint source, int sourceWidth, int sourceHeight,
 	return mismatches == 0 ? 0 : 1;
 }
 
+//---------------------------------------------------------------------------
+// Parameter automation for --pipe.
+//
+// A plain text file of `frame  Parameter Name  value` lines. Values are held
+// before the first key and after the last, and linearly interpolated between,
+// which is all a demo reel needs and keeps the whole automation of a video
+// readable in one screen of text:
+//
+//     0     Scope        0
+//     120   Scope        1
+//     180   Zoom         0.4
+//
+// The format is identical to old-cathode's octest and porthole's phtest, on
+// purpose: three harnesses that read the same file can share one build.py.
+//
+// Note what this means for an option parameter -- Scope, Layout, Quality.
+// Interpolating one produces the intermediate values on the way, so a move from
+// Waveform to Histogram passes through Vectorscope. Key them one frame apart to
+// cut, or accept the sweep.
+//---------------------------------------------------------------------------
+using Track = std::vector< std::pair< int, float > >;
+
+std::map< std::string, Track > loadScript( const std::string& path, std::string& error )
+{
+	std::map< std::string, Track > tracks;
+	std::ifstream file( path );
+	if( !file )
+	{
+		error = "cannot open " + path;
+		return tracks;
+	}
+
+	std::string line;
+	int lineNumber = 0;
+	while( std::getline( file, line ) )
+	{
+		++lineNumber;
+		const size_t hash = line.find( '#' );
+		if( hash != std::string::npos )
+			line.erase( hash );
+		std::istringstream in( line );
+
+		int frame = 0;
+		if( !( in >> frame ) )
+			continue;//blank or comment
+
+		//The name is everything up to the last token, because parameters have
+		//spaces in them ("Assist Level") and the value never does.
+		std::vector< std::string > words;
+		std::string word;
+		while( in >> word )
+			words.push_back( word );
+		if( words.size() < 2 )
+		{
+			error = path + ":" + std::to_string( lineNumber ) + ": expected `frame Parameter Name value`";
+			return {};
+		}
+
+		const float value = std::strtof( words.back().c_str(), nullptr );
+		words.pop_back();
+		std::string name = words.front();
+		for( size_t i = 1; i < words.size(); ++i )
+			name += " " + words[ i ];
+
+		tracks[ name ].emplace_back( frame, value );
+	}
+
+	for( auto& entry : tracks )
+		std::sort( entry.second.begin(), entry.second.end() );
+	return tracks;
+}
+
+float valueAt( const Track& track, int frame )
+{
+	if( track.empty() )
+		return 0.0f;
+	if( frame <= track.front().first )
+		return track.front().second;
+	if( frame >= track.back().first )
+		return track.back().second;
+
+	for( size_t i = 1; i < track.size(); ++i )
+	{
+		if( frame <= track[ i ].first )
+		{
+			const auto& a    = track[ i - 1 ];
+			const auto& b    = track[ i ];
+			const float span = static_cast< float >( b.first - a.first );
+			const float t    = span > 0.0f ? ( static_cast< float >( frame - a.first ) / span ) : 1.0f;
+			return a.second + ( b.second - a.second ) * t;
+		}
+	}
+	return track.back().second;
+}
+
+bool readExactly( void* into, size_t bytes )
+{
+	unsigned char* p = static_cast< unsigned char* >( into );
+	size_t got       = 0;
+	while( got < bytes )
+	{
+		const size_t n = fread( p + got, 1, bytes - got, stdin );
+		if( n == 0 )
+			return false;//clean EOF, or a short final frame we cannot use
+		got += n;
+	}
+	return true;
+}
+
 void usage()
 {
 	std::printf(
@@ -741,7 +854,13 @@ void usage()
 		"  --gradient        render a 2D gradient (what sweep.py needs)\n"
 		"  --alpha V         premultiply the source by this alpha, as Resolume would\n"
 		"  --amplitude V     bar amplitude, 0.75 or 1.0 (default 0.75)\n"
-		"  --set \"Name=V\"    set a parameter by its display name, 0..1\n" );
+		"  --set \"Name=V\"    set a parameter by its display name, 0..1\n"
+		"  --pipe            read raw RGBA frames from stdin, write them to stdout,\n"
+		"                    so real footage goes through the real shaders:\n"
+		"                      ffmpeg -i in.mov -f rawvideo -pix_fmt rgba - \\\n"
+		"                        | sctest --pipe --width 1920 --height 1080 \\\n"
+		"                        | ffmpeg -f rawvideo -pix_fmt rgba -s 1920x1080 -i - out.mov\n"
+		"  --script PATH     parameter automation for --pipe (see loadScript)\n" );
 }
 
 } // namespace
@@ -755,6 +874,8 @@ int main( int argc, char** argv )
 	double sourceAlpha     = 1.0;
 	bool useRamp           = false;
 	bool useGradient       = false;
+	bool pipeMode          = false;
+	std::string scriptPath;
 	bool doVerify          = false;
 	bool doProbe           = false;
 	bool listOnly          = false;
@@ -775,6 +896,10 @@ int main( int argc, char** argv )
 			useRamp = true;
 		else if( arg == "--gradient" )
 			useGradient = true;
+		else if( arg == "--pipe" )
+			pipeMode = true;
+		else if( arg == "--script" && i + 1 < argc )
+			scriptPath = argv[ ++i ];
 		else if( arg == "--alpha" && i + 1 < argc )
 			sourceAlpha = std::atof( argv[ ++i ] );
 		else if( arg == "--verify" )
@@ -935,6 +1060,117 @@ int main( int argc, char** argv )
 		std::printf( "\n%d checks, %d failed\n", report.checks, report.failures );
 		plugin.DeInitGL();
 		return report.failures == 0 ? 0 : 1;
+	}
+
+	//-----------------------------------------------------------------------
+	// --pipe: real footage through the real shaders.
+	//
+	// The plugin has no window of its own, so the only honest way to show it
+	// working on real pictures without driving Resolume is to push frames
+	// through the shipped chain here. Same approach as old-cathode's octest and
+	// porthole's phtest, and the script format is identical so all three share
+	// one build.py.
+	//-----------------------------------------------------------------------
+	if( pipeMode )
+	{
+		std::map< std::string, Track > tracks;
+		if( !scriptPath.empty() )
+		{
+			std::string error;
+			tracks = loadScript( scriptPath, error );
+			if( !error.empty() )
+			{
+				std::fprintf( stderr, "sctest: %s\n", error.c_str() );
+				return 2;
+			}
+			//Fail on a name that does not exist rather than silently animating
+			//nothing for the length of the reel.
+			for( const auto& entry : tracks )
+			{
+				if( indexOfParameter( entry.first ) < 0 )
+				{
+					std::fprintf( stderr, "sctest: script names '%s', which is not a parameter (try --list)\n",
+					              entry.first.c_str() );
+					return 2;
+				}
+			}
+		}
+
+		const size_t frameBytes = static_cast< size_t >( width ) * height * 4;
+		const size_t rowBytes   = static_cast< size_t >( width ) * 4;
+		std::vector< unsigned char > in( frameBytes );
+		std::vector< unsigned char > flip( frameBytes );
+		std::vector< unsigned char > out( frameBytes );
+
+		//The generated picture is irrelevant here -- every frame is uploaded
+		//from stdin -- but the texture has to exist at the piped size, not the
+		//test picture's.
+		const GLuint pipeSource = makeTexture( width, height, nullptr );
+
+		FFGLTextureStruct inputStruct = {};
+		inputStruct.Width = inputStruct.HardwareWidth = static_cast< FFUInt32 >( width );
+		inputStruct.Height = inputStruct.HardwareHeight = static_cast< FFUInt32 >( height );
+		inputStruct.Handle                              = pipeSource;
+		FFGLTextureStruct* inputs[ 1 ]                  = { &inputStruct };
+
+		ProcessOpenGLStruct process = {};
+		process.numInputTextures    = 1;
+		process.inputTextures       = inputs;
+		process.HostFBO             = targetFBO;
+
+		long frame = 0;
+		while( readExactly( in.data(), frameBytes ) )
+		{
+			//ffmpeg hands over top-down rows; GL wants the bottom row first.
+			//The two flips do not cancel: the scopes are symmetric in x but the
+			//picture is not, and getting this wrong gives a vertically mirrored
+			//picture with a perfectly correct-looking scope beside it.
+			for( int y = 0; y < height; ++y )
+				std::memcpy( flip.data() + static_cast< size_t >( y ) * rowBytes,
+				             in.data() + static_cast< size_t >( height - 1 - y ) * rowBytes, rowBytes );
+
+			glBindTexture( GL_TEXTURE_2D, pipeSource );
+			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, flip.data() );
+			glBindTexture( GL_TEXTURE_2D, 0 );
+
+			for( const auto& entry : tracks )
+				plugin.SetFloatParameter( static_cast< unsigned int >( indexOfParameter( entry.first ) ),
+				                          valueAt( entry.second, static_cast< int >( frame ) ) );
+
+			glBindFramebuffer( GL_FRAMEBUFFER, targetFBO );
+			glViewport( 0, 0, width, height );
+			glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+			glClear( GL_COLOR_BUFFER_BIT );
+			if( plugin.ProcessOpenGL( &process ) != FF_SUCCESS )
+			{
+				std::fprintf( stderr, "sctest: ProcessOpenGL failed on frame %ld\n", frame );
+				return 1;
+			}
+
+			out = readBack( targetFBO, width, height );
+
+			//Composited over black, so the reel shows what the operator sees on
+			//a layer rather than a mostly transparent frame the encoder will
+			//render as white.
+			for( size_t i = 0; i < out.size(); i += 4 )
+			{
+				const double a = out[ i + 3 ] / 255.0;
+				for( int c = 0; c < 3; ++c )
+					out[ i + c ] = static_cast< unsigned char >( out[ i + c ] * a + 0.5 );
+				out[ i + 3 ] = 255;
+			}
+
+			if( fwrite( out.data(), 1, frameBytes, stdout ) != frameBytes )
+			{
+				std::fprintf( stderr, "sctest: short write on frame %ld\n", frame );
+				return 1;
+			}
+			++frame;
+		}
+
+		std::fprintf( stderr, "sctest: %ld frames\n", frame );
+		plugin.DeInitGL();
+		return 0;
 	}
 
 	if( !runPass( plugin, sourceTexture, sourceWidth, sourceHeight, targetFBO, width, height ) )

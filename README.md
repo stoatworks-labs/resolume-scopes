@@ -14,12 +14,25 @@ Resolume Arena and Avenue. Drop it on a layer and it measures whatever is
 arriving at that point in the chain — either replacing the picture or sitting
 over it.
 
+![An RGB parade overlaid on a clip](docs/hero.png)
+
 | Scope | Modes |
 |---|---|
 | **Waveform** | Luma · RGB parade · Y Cb Cr parade |
 | **Vectorscope** | 75% / 100% targets, 1× to 8× zoom, skin-tone line |
 | **Histogram** | RGB · Luma · RGB + Luma, 256 bins |
 | **Picture Assist** | False colour · Zebra · Focus peaking |
+
+| | |
+|---|---|
+| ![Y Cb Cr parade](docs/waveform.png) | ![Vectorscope](docs/vectorscope.png) |
+| Y Cb Cr parade — luma, then the two colour differences centred on chroma zero | Vectorscope — target boxes and the skin-tone line, both derived from the selected matrix |
+| ![Histogram](docs/histogram.png) | ![False colour](docs/assist.png) |
+| Histogram — RGB and luma together; overlaps add, so white means all four agree | False colour — the exposure scale, from crushed blue through to clipping |
+
+Every image above is one frame of Resolume's own bundled demo media pushed
+through the shipped shaders by the offline harness — regenerate them with
+`tools/screenshots.sh`.
 
 ## The thing to know before you trust a reading
 
