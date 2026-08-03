@@ -262,3 +262,40 @@ reading `fileinfo.path` back. There is **no endpoint for adding an effect** —
 - Sibling FFGL plugins share this build and harness shape: `porthole`,
   `old-cathode`, `resolume-luma-keyer`. The scope maths is a port of
   `atem-scopes`, which has the same measurement core in TypeScript.
+
+
+## The browser demo
+
+`demo/` is a static page at **resolume-scopes-demo.stoatworks-labs.com**: this
+plugin's own GLSL, ported to WebGL2, running on clips generated in the page with
+the parameters the constructor declares. It is deployed as a Cloudflare Worker
+serving `demo/` as static assets (`wrangler.toml`), with **no build step** — what
+is committed is what is served.
+
+Three things about it are not visible from the files:
+
+- **`demo/plugin.js` carries a second copy of the shader.** The demo cannot
+  include a C++ file, so the GLSL from `source/Shaders.cpp` is duplicated there and
+  *nothing enforces that they agree*. Change the shader and change both, or the
+  page quietly goes on rendering the old maths.
+- **`demo/vendor/` is vendored, not authored here.** The master is
+  `stoatworks-backend/resolume-demo/`; fix it there and re-run its `sync.sh`.
+  `sync.sh --check` reports drift. A fix applied to the copy fixes one plugin out
+  of six.
+- **Verify a deploy by content, never by status code.** A wrong page still
+  answers 200.
+
+```bash
+cf-run npx wrangler deploy
+curl -s 'https://resolume-scopes-demo.stoatworks-labs.com/?cb=1' | grep -o '<title>[^<]*'
+```
+
+`Colorimetry`, `Graticule` and `Layout` are ported into
+`demo/plugin.js` alongside the shaders, because the graticule being
+built from the same module the shader plots with is the whole point of
+the vectorscope. Port them together or not at all.
+
+The page is emphatic that it is not the plugin, and lists what it does not
+reproduce in a disclosure at the foot. Keep that: it is a port, so nothing on it
+is evidence about the plugin, and the offline harness in this repository is
+still the only thing that measures anything.
