@@ -14,7 +14,12 @@ Resolume Arena and Avenue. Drop it on a layer and it measures whatever is
 arriving at that point in the chain — either replacing the picture or sitting
 over it.
 
+**Video:** [What it does, in 49 seconds](https://www.youtube.com/watch?v=5fIK9vonhas)
+
 ![An RGB parade overlaid on a clip](docs/hero.png)
+
+<sub>One frame of Resolume's own bundled demo media with an RGB parade overlaid,
+rendered by `sctest`, the offline harness — not a Resolume screen capture.</sub>
 
 | Scope | Modes |
 |---|---|
@@ -59,6 +64,36 @@ confidently wrong about half the time. Set them to match your source.
 The defaults are BT.709, full range, unpremultiply on, which is what a modern
 composition on a modern machine usually is. They are still defaults, not
 detection.
+
+<!-- downloads:start -->
+
+## Download
+
+**[v0.1.0](https://github.com/stoatworks-labs/resolume-scopes/releases/tag/v0.1.0)** — prebuilt for macOS and Windows. Pick your platform:
+
+<details>
+<summary><b>macOS</b> — Universal (Apple Silicon + Intel)</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`resolume-scopes-0.1.0-macos-universal.dmg`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v0.1.0/resolume-scopes-0.1.0-macos-universal.dmg) | 206 KB |
+| Universal (Apple Silicon + Intel) · .zip archive | [`resolume-scopes-macos-universal.zip`](https://github.com/stoatworks-labs/resolume-scopes/releases/latest/download/resolume-scopes-macos-universal.zip) | 164 KB |
+
+</details>
+
+<details>
+<summary><b>Windows</b> — x64</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| x64 · .exe installer | [`resolume-scopes-0.1.0-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v0.1.0/resolume-scopes-0.1.0-windows-x86_64-setup.exe) | 219 KB |
+| x64 · .zip archive | [`resolume-scopes-windows-x86_64.zip`](https://github.com/stoatworks-labs/resolume-scopes/releases/latest/download/resolume-scopes-windows-x86_64.zip) | 113 KB |
+
+</details>
+
+All builds, checksums and release notes: [github.com/stoatworks-labs/resolume-scopes/releases](https://github.com/stoatworks-labs/resolume-scopes/releases).
+
+<!-- downloads:end -->
 
 ## Building
 
