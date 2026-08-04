@@ -192,6 +192,10 @@ compile, which from the operator's side looks like "the effect does nothing"
 with no message anywhere. It names the stage and logs the GL vendor, renderer
 and version next to it.
 
+<!-- attributions:start -->
+This project is built on other people's work — see [ATTRIBUTIONS.md](ATTRIBUTIONS.md).
+<!-- attributions:end -->
+
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
