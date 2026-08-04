@@ -110,6 +110,8 @@ harness in this repository.
 
 All builds, checksums and release notes: [github.com/stoatworks-labs/resolume-scopes/releases](https://github.com/stoatworks-labs/resolume-scopes/releases).
 
+The Windows builds are unsigned, so SmartScreen warns once.
+
 <!-- downloads:end -->
 
 ## Building
