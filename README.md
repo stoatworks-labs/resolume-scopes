@@ -93,8 +93,8 @@ harness in this repository.
 
 | Build | Download | Size |
 | --- | --- | --- |
-| Universal (Apple Silicon + Intel) · .dmg disk image | [`resolume-scopes-1.0.0-macos-universal.dmg`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v1.0.0/resolume-scopes-1.0.0-macos-universal.dmg) | 207 KB |
-| Universal (Apple Silicon + Intel) · .zip archive | [`resolume-scopes-macos-universal.zip`](https://github.com/stoatworks-labs/resolume-scopes/releases/latest/download/resolume-scopes-macos-universal.zip) | 164 KB |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`resolume-scopes-1.0.0-macos-universal.dmg`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v1.0.0/resolume-scopes-1.0.0-macos-universal.dmg) | 227 KB |
+| Universal (Apple Silicon + Intel) · .zip archive | [`resolume-scopes-macos-universal.zip`](https://github.com/stoatworks-labs/resolume-scopes/releases/latest/download/resolume-scopes-macos-universal.zip) | 181 KB |
 
 </details>
 
