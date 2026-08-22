@@ -231,6 +231,18 @@ Scopes::Scopes()
 
 	SetParamGroup( SC_ASSIST_LEVEL, "Assist" );
 
+	// The About block. Declared inline rather than through a helper, because
+	// SetParamInfo is protected on CFFGLPlugin and nothing outside the class
+	// can call it.
+	SetParamInfo( SC_ABOUT_FIRST, "About", FF_TYPE_TEXT, stoatworks::about::defaultText() );
+	{
+		FFUInt32 aboutId = SC_ABOUT_FIRST + 1;
+		for( const auto& b : stoatworks::about::buttons() )
+			SetParamInfo( aboutId++, b.label, FF_TYPE_EVENT, false );
+	}
+	for( FFUInt32 id = SC_ABOUT_FIRST; id < SC_COUNT; ++id )
+		SetParamGroup( id, "About" );
+
 	FFGLLog::LogToHost( "Created Scopes effect" );
 
 	scopes::diag::init();
@@ -708,10 +720,41 @@ FFResult Scopes::DeInitGL()
 	return FF_SUCCESS;
 }
 
+//---------------------------------------------------------------------------
+char* Scopes::GetTextParameter( unsigned int index )
+{
+	if( index == SC_ABOUT_FIRST )
+	{
+		//Function-local rather than a member: the line is built from
+		//compile-time facts, so it is the same for every instance, and the host
+		//only needs the pointer to outlive the call.
+		static const std::string aboutLine = stoatworks::about::textParam( 0 );
+		return const_cast< char* >( aboutLine.c_str() );
+	}
+
+	return CFFGLPlugin::GetTextParameter( index );
+}
+
+//---------------------------------------------------------------------------
+FFResult Scopes::SetTextParameter( unsigned int index, const char* value )
+{
+	//See the declaration: the base class fails, and a failed default deletes
+	//the instance. The About line is display-only, so there is genuinely
+	//nothing to store -- but it has to say so successfully.
+	if( index == SC_ABOUT_FIRST )
+		return FF_SUCCESS;
+
+	return CFFGLPlugin::SetTextParameter( index, value );
+}
+
 FFResult Scopes::SetFloatParameter( unsigned int index, float value )
 {
 	if( index >= SC_COUNT )
 		return FF_FAIL;
+
+	//The About buttons open a browser and store nothing.
+	if( index >= SC_ABOUT_FIRST )
+		return stoatworks::about::handleParam( index - SC_ABOUT_FIRST, value ) ? FF_SUCCESS : FF_FAIL;
 
 	//Deliberately not logged. A parameter change is not a diagnostic event: the
 	//host already shows the value, and an operator animating a slider would put

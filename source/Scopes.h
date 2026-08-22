@@ -6,6 +6,11 @@
 
 #include <FFGLSDK.h>
 
+// After FFGLSDK.h, which is where FFUInt32 comes from.
+#include "StoatworksAboutParams.h"
+
+#include <string>
+
 /**
     Scopes -- waveform, vectorscope, histogram and picture assist for Resolume.
 
@@ -61,6 +66,16 @@ public:
 	FFResult SetFloatParameter( unsigned int index, float value ) override;
 	float GetFloatParameter( unsigned int index ) override;
 
+	char* GetTextParameter( unsigned int index ) override;
+
+	/// Declared only so the About line can accept its own default.
+	/// instantiateGL pushes every declared default back through the setters on
+	/// a fresh instance and deletes the instance if one fails, and
+	/// CFFGLPlugin's SetTextParameter is a stub that returns exactly that
+	/// failure -- so without this override no real host can load the plugin,
+	/// while every offline harness here carries on passing.
+	FFResult SetTextParameter( unsigned int index, const char* value ) override;
+
 	/// The order the host shows them in.
 	enum ParamID : FFUInt32
 	{
@@ -93,7 +108,12 @@ public:
 		//Assist.
 		SC_ASSIST_LEVEL,
 
-		SC_COUNT
+		//About. FFGL has no window and cannot make one, so the name, the
+		//version, the maker and the links are parameters the host draws with
+		//everything else. Last in the enum so no saved composition's parameter
+		//ids shift. See StoatworksAboutParams.h.
+		SC_ABOUT_FIRST,
+		SC_COUNT = SC_ABOUT_FIRST + stoatworks::about::kParamCount
 	};
 
 private:
@@ -134,5 +154,9 @@ private:
 	GLuint lineVAO = 0;
 	GLuint lineVBO = 0;
 
-	float params[ SC_COUNT ];
+	/// Zero-initialised: the constructor writes a default for every real
+	/// control, but the About block's ids are never stored to -- pressing a
+	/// button opens a browser and returns -- so without this GetFloatParameter
+	/// hands the host whatever was on the stack for them.
+	float params[ SC_COUNT ] = {};
 };
