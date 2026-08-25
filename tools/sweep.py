@@ -138,6 +138,15 @@ def diff(a, b):
 names = subprocess.run(["./build/sctest", "--list"], capture_output=True, text=True).stdout
 params = [" ".join(l.split()[1:-1]) for l in names.strip().splitlines()]
 
+# The About block is a text line and browser buttons, declared last. They never
+# touch a pixel, so sweeping them only buries a real dead control. Truncating at
+# "About" rather than naming each button keeps this right as links are added --
+# publishing the user guide added a fourth.
+for _i, _p in enumerate(params):
+    if _p == "About":
+        params = params[:_i]
+        break
+
 print(f"{'parameter':<16} {'pixels changed':>15} {'mean delta':>11}   verdict")
 dead = []
 for p in params:
