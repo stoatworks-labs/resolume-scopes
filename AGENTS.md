@@ -228,7 +228,7 @@ Two things about the baseline that will fool you:
   option dropdowns, Arena's real texture sizes and — the important one —
   **whether the input is actually premultiplied** are all unconfirmed. The
   harness supplies its own textures, so it cannot answer any of that.
-- **The Windows build has never been run**, or compiled.
+- **The Windows build compiles and ships** — the v1.0.3 release carries an x64 installer and a zip — **but has never been run.**
 - **No performance figure has been taken.** A parade at Full quality on a 4K
   source scatters several million points a frame; nobody has measured the cost.
 - Everything here comes from one M4 Max, never from CI — hosted macOS runners

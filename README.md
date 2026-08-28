@@ -179,7 +179,7 @@ pixel is wrong.
   option dropdowns, Arena's real texture sizes, and — most importantly — whether
   the input really is premultiplied are all unconfirmed. Those are exactly what
   an offline harness cannot tell you, because it supplies its own textures.
-- **The Windows build has never been run**, or compiled.
+- **The Windows build compiles and ships** — the v1.0.3 release carries an x64 installer and a zip — **but has never been run.**
 - **No performance figure has been taken.** A parade at Full quality on a 4K
   source scatters several million points a frame and nobody has measured what
   that costs.
