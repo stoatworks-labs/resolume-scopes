@@ -86,14 +86,14 @@ harness in this repository.
 
 ## Download
 
-**[v1.0.3](https://github.com/stoatworks-labs/resolume-scopes/releases/tag/v1.0.3)** — prebuilt for macOS and Windows. Pick your platform:
+**[v1.0.4](https://github.com/stoatworks-labs/resolume-scopes/releases/tag/v1.0.4)** — prebuilt for macOS and Windows. Pick your platform:
 
 <details>
 <summary><b>macOS</b> — Universal (Apple Silicon + Intel)</summary>
 
 | Build | Download | Size |
 | --- | --- | --- |
-| Universal (Apple Silicon + Intel) · .dmg disk image | [`resolume-scopes-1.0.3-macos-universal.dmg`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v1.0.3/resolume-scopes-1.0.3-macos-universal.dmg) | 223 KB |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`resolume-scopes-1.0.4-macos-universal.dmg`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v1.0.4/resolume-scopes-1.0.4-macos-universal.dmg) | 223 KB |
 | Universal (Apple Silicon + Intel) · .zip archive | [`resolume-scopes-macos-universal.zip`](https://github.com/stoatworks-labs/resolume-scopes/releases/latest/download/resolume-scopes-macos-universal.zip) | 185 KB |
 
 </details>
@@ -103,7 +103,7 @@ harness in this repository.
 
 | Build | Download | Size |
 | --- | --- | --- |
-| x64 · .exe installer | [`resolume-scopes-1.0.3-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v1.0.3/resolume-scopes-1.0.3-windows-x86_64-setup.exe) | 223 KB |
+| x64 · .exe installer | [`resolume-scopes-1.0.4-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/resolume-scopes/releases/download/v1.0.4/resolume-scopes-1.0.4-windows-x86_64-setup.exe) | 223 KB |
 | x64 · .zip archive | [`resolume-scopes-windows-x86_64.zip`](https://github.com/stoatworks-labs/resolume-scopes/releases/latest/download/resolume-scopes-windows-x86_64.zip) | 117 KB |
 
 </details>
