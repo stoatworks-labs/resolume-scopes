@@ -21,7 +21,7 @@ static CFFGLPluginInfo PluginInfo(
 	0,                                                        // Plugin major version number
 	1,                                                        // Plugin minor version number
 	FF_EFFECT,                                                // Plugin type
-	"Waveform, vectorscope, histogram and picture assist",     // Plugin description
+	"Waveform, vectorscope, histogram and picture assist. Drop it on a layer and it measures whatever arrives at that point in the chain, replacing the picture or sitting over it.\n\nWaveform in luma, RGB parade or Y Cb Cr parade. Vectorscope with 75% and 100% targets and 1x to 8x zoom. A 256-bin histogram. False colour, zebra and focus peaking.\n\nHonest expectation: a hardware scope is fed a signal a standard defines. An FFGL effect is handed a texture, by which point the matrix, the range expansion and the transfer function have been decided and thrown away. It is exact about what reaches this point in the chain, not about what the camera recorded.",// Plugin description
 	"Scopes FFGL effect"                                      // About
 );
 
