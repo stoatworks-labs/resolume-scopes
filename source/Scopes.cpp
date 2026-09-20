@@ -15,7 +15,7 @@ using namespace scopes;
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< Scopes >,                                  // Create method
 	"SC01",                                                   // Plugin unique ID of maximum length 4.
-	"Scopes",                                                 // Plugin name
+	"SW Scopes",                                              // Plugin name
 	2,                                                        // API major version number
 	1,                                                        // API minor version number
 	0,                                                        // Plugin major version number
