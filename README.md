@@ -5,13 +5,13 @@
 > verified numerically by an offline harness that drives the real plugin class in
 > a headless GL context: the trace is checked against 75% and 100% colour bars in
 > all three matrices, and the GLSL is measured against an independent C++
-> implementation (see [Status](#status)). It has **never been loaded into
-> Resolume** — only compiled, rendered and measured offline. Check it in your own
-> rig before trusting it in a show.
+> implementation (see [Status](#status)). It's **never been loaded into
+> Resolume**; it's only been compiled, rendered and measured offline. Check it in your own
+> rig before you trust it in a show.
 
 Waveform, vectorscope, histogram and picture assist as a single FFGL effect for
-Resolume Arena and Avenue. Drop it on a layer and it measures whatever is
-arriving at that point in the chain — either replacing the picture or sitting
+Resolume Arena and Avenue. Drop it on a layer and it measures whatever's
+arriving at that point in the chain, either replacing the picture or sitting
 over it.
 
 **Video:** [What it does, in 49 seconds](https://www.youtube.com/watch?v=5fIK9vonhas)
@@ -19,7 +19,7 @@ over it.
 ![An RGB parade overlaid on a clip](docs/hero.png)
 
 <sub>One frame of Resolume's own bundled demo media with an RGB parade overlaid,
-rendered by `sctest`, the offline harness — not a Resolume screen capture.</sub>
+rendered by `sctest`, the offline harness, rather than captured from Resolume.</sub>
 
 | Scope | Modes |
 |---|---|
@@ -36,7 +36,7 @@ rendered by `sctest`, the offline harness — not a Resolume screen capture.</su
 | Histogram — RGB and luma together; overlaps add, so white means all four agree | False colour — the exposure scale, from crushed blue through to clipping |
 
 Every image above is one frame of Resolume's own bundled demo media pushed
-through the shipped shaders by the offline harness — regenerate them with
+through the shipped shaders by the offline harness. Regenerate them with
 `tools/screenshots.sh`.
 
 ## The thing to know before you trust a reading
@@ -53,32 +53,34 @@ None of them is recorded in the pixels, and every one of them changes the
 reading. A BT.709 clip read as BT.601 throws every vectorscope target about
 **5.7° off its box**. Unexpanded studio levels put reference white at **92 IRE**.
 A clip at 50% layer opacity reads a stop down. Each of those looks like a mildly
-misadjusted picture rather than a measurement error, which is exactly what makes
+misadjusted picture rather than a measurement error, which is what makes
 it dangerous.
 
 So **Matrix**, **Range** and **Unpremultiply** are parameters, and this plugin
-guesses at none of them. That is not a gap — it is the only honest arrangement,
-because a scope that silently picks an interpretation is a scope that is
-confidently wrong about half the time. Set them to match your source.
+doesn't guess at any of them. A scope that picks an interpretation without telling
+you will be confidently wrong about half the time, and I'd rather it asked. Set them
+to match your source.
 
 The defaults are BT.709, full range, unpremultiply on, which is what a modern
-composition on a modern machine usually is. They are still defaults, not
+composition on a modern machine usually is. They're still defaults, though, not
 detection.
 
 ## Try it in your browser
 
 **<https://resolume-scopes-demo.stoatworks-labs.com>**
 
-Not the plugin — the GLSL from `source/Shaders.cpp`, copied across unedited and run in
-WebGL2 over clips generated in the page, with the parameters this plugin's
-constructor declares and the conversions its own code applies. No install, and
-nothing you load leaves your machine.
+It isn't the plugin: it's the GLSL from `source/Shaders.cpp`, copied across unedited and run
+in WebGL2 over clips generated in the page, with the parameters this plugin's
+constructor declares and the conversions its own code applies. There's nothing to install,
+and nothing you load leaves your machine.
 
-Put the colour bars up, choose the vectorscope and change Matrix: the target boxes and the trace move **together**, because the graticule is built from the same `Colorimetry` module the shader plots with. Then try the wrong one on purpose and see how plausible a mismatch looks.
+Put the colour bars up, pick the vectorscope and change Matrix: the target boxes and the trace
+move **together**, because the graticule is built from the same `Colorimetry` module the shader
+plots with. Then pick the wrong one on purpose and see how plausible a mismatch looks.
 
-It is a port, so it is not evidence about the plugin: a browser is not Resolume,
-GLSL ES 3.00 is not desktop GL 4.1 core, and nothing on that page measures
-anything. The page says all of that itself, in a disclosure at the foot. The
+It's a port, so it isn't evidence about the plugin: a browser isn't Resolume,
+GLSL ES 3.00 isn't desktop GL 4.1 core, and nothing on that page measures
+anything. The page says all that itself, in a disclosure at the foot. The
 numbers worth trusting are in [Status](#status) and come from the offline
 harness in this repository.
 
@@ -129,26 +131,26 @@ cmake --install build
 
 ## Controls
 
-**Scope** — which scope, plus the mode selector for each, trace **Intensity**,
+**Scope:** which scope, plus the mode selector for each, trace **Intensity**,
 vectorscope **Zoom**, and **Quality** (how many source pixels get measured).
 
-**Layout** — *Scope Only* replaces the picture; *Overlay* draws the scope over
+**Layout:** *Scope Only* replaces the picture; *Overlay* draws the scope over
 it at a **Size**, **X**, **Y** and **Opacity** you choose. Picture Assist ignores
-all of these: it is the picture with a different shader on it, not a rectangle
+all of these: it's the picture with a different shader on it, not a rectangle
 on top of one.
 
-**Graticule** — brightness, 75%/100% **Bars** targets, and the scope's
+**Graticule:** brightness, 75%/100% **Bars** targets, and the scope's
 **Background**. At Background 0 the scope has no backdrop and composites over
 whatever is on the layers below.
 
-**Signal** — Matrix, Range, Unpremultiply. See above.
+**Signal:** Matrix, Range, Unpremultiply. See above.
 
-**Assist** — one **Assist Level** that means the zebra threshold in IRE when
+**Assist:** one **Assist Level** that means the zebra threshold in IRE when
 Zebra is showing and the gradient threshold when Focus Peaking is.
 
 Intensity is a *density* control, not a brightness. The trace is drawn
-additively, so it says how much one sample contributes and therefore how many
-coincident samples it takes to saturate. It is normalised against the sample
+additively, so it says how much one sample contributes, and so how many
+coincident samples it takes to saturate. It's normalised against the sample
 count, so changing Quality changes the resolution of the measurement without
 changing how bright the trace looks.
 
@@ -163,31 +165,31 @@ changing how bright the trace looks.
   histogram spikes in the right bin for all seven bars and nowhere else.
 - The GLSL's false-colour banding agrees with the C++ `falseColourBandFor()` on
   every column of a neutral ramp, in all three matrices and both ranges.
-- All 19 parameters measurably affect the output — the check that catches a
-  uniform name that does not match between the C++ and the GLSL, which is
-  otherwise silent.
+- All 19 parameters measurably affect the output. That's the check that catches a
+  uniform name that doesn't match between the C++ and the GLSL, which otherwise
+  fails silently.
 - The macOS bundle is universal (arm64 + x86_64) and exports `plugMain`.
 
 The expected readings are derived from `source/Colorimetry.cpp`, which is also
-where the shaders' uniforms and the graticule come from — so the trace has to
-land in the box, and if it does not, something between the parameter and the
+where the shaders' uniforms and the graticule come from, so the trace has to
+land in the box, and if it doesn't, something between the parameter and the
 pixel is wrong.
 
 **Not verified:**
 
-- **It has never been loaded into Resolume.** Not once. Parameter groups, the
-  option dropdowns, Arena's real texture sizes, and — most importantly — whether
-  the input really is premultiplied are all unconfirmed. Those are exactly what
-  an offline harness cannot tell you, because it supplies its own textures.
-- **The Windows build compiles and ships** — the v1.0.3 release carries an x64 installer and a zip — **but has never been run.**
+- **It's never been loaded into Resolume.** Not once. Parameter groups, the
+  option dropdowns, Arena's real texture sizes and, most importantly, whether
+  the input really is premultiplied are all unconfirmed. Those are just what
+  an offline harness can't tell you, because it supplies its own textures.
+- **The Windows build compiles and ships** (the v1.0.3 release carries an x64 installer and a zip) **but has never been run.**
 - **No performance figure has been taken.** A parade at Full quality on a 4K
-  source scatters several million points a frame and nobody has measured what
+  source scatters several million points a frame and nobody's measured what
   that costs.
 
 ## Diagnostics
 
-`source/Diag.cpp` writes a log to `~/Library/Logs/resolume-scopes/` (macOS). It
-exists for the one failure that actually happens — a shader that will not
+`source/Diag.cpp` writes a log to `~/Library/Logs/resolume-scopes/` (macOS). It's
+there for the one failure that actually happens: a shader that won't
 compile, which from the operator's side looks like "the effect does nothing"
 with no message anywhere. It names the stage and logs the GL vendor, renderer
 and version next to it.
