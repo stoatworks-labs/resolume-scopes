@@ -22,8 +22,8 @@ in the chain, either replacing the picture or sitting over it.
 > **It's never been loaded into Resolume.** Parameter groups, the option dropdowns, Arena's real
 > texture sizes and, most importantly, **whether the input really is premultiplied** are all
 > unconfirmed, and those are just what an offline harness can't tell you, because it supplies
-> its own textures. The Windows build has never been compiled, and no performance figure has been
-> taken.
+> its own textures. The Windows build compiles and ships but has never been run, and no
+> performance figure has been taken.
 >
 > This codebase was created with AI assistance, directed and reviewed by a human author.
 
