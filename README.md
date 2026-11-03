@@ -16,6 +16,8 @@ over it.
 
 **Video:** [What it does, in 49 seconds](https://www.youtube.com/watch?v=5fIK9vonhas)
 
+The [project page](https://stoatworks-labs.com/software/resolume-scopes/) has the downloads, the [user guide](https://stoatworks-labs.com/software/resolume-scopes/guide/) and the video.
+
 ![An RGB parade overlaid on a clip](docs/hero.png)
 
 <sub>One frame of Resolume's own bundled demo media with an RGB parade overlaid,
